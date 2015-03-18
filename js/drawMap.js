@@ -27,7 +27,7 @@ function redrawMap()
 
 }
 
-d3.json("./bd1.json", function(error, bd) {
+d3.json("./data/bd.json", function(error, bd) {
   svg.selectAll(".subunit")
       .data(topojson.feature(bd, bd.objects.subunits).features)
     .enter().append("path")
