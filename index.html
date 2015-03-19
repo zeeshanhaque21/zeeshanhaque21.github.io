@@ -136,6 +136,13 @@
 	  distDim.dispose();
 	  distSum.dispose();
  
+    })
+    .on("postRedraw",function(){
+    	      distDim = ndx.dimension(function(d) {return d.District;});
+      distSum = distDim.group().reduceSum(function(d){return 1;});
+      loadMapValues("distSum");
+	  distDim.dispose();
+	  distSum.dispose();
     });
 
 	distDim = ndx.dimension(function(d) {return d.District;});
