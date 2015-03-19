@@ -91,7 +91,7 @@
 	
   d3.csv("./data/output.csv", function (data2){
     var dateFormat = d3.time.format('%Y-%m-%d');
-    var hitslineChart  = dc.barChart("#chart-line-suicides");
+    var suicideBarChart  = dc.barChart("#chart-line-suicides");
     data2.forEach(function(d){
       d.Date = dateFormat.parse(d.Date);
 	  d.Year = d.Date.getFullYear();
@@ -120,7 +120,7 @@
 
 
 
-  hitslineChart
+  suicideBarChart
     .width(800).height(100)
     .dimension(dateDim)
     .group(daySum)
@@ -138,7 +138,7 @@
  
     })
     .on("postRedraw",function(){
-    	      distDim = ndx.dimension(function(d) {return d.District;});
+   	  distDim = ndx.dimension(function(d) {return d.District;});
       distSum = distDim.group().reduceSum(function(d){return 1;});
       loadMapValues("distSum");
 	  distDim.dispose();
