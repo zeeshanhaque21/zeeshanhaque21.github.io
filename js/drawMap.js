@@ -26,7 +26,7 @@ function redrawMap()
 		});
 
 }
-
+/*
 d3.json("./data/bd.json", function(error, bd) {
   svg.selectAll(".subunit")
       .data(topojson.feature(bd, bd.objects.subunits).features)
@@ -36,4 +36,4 @@ d3.json("./data/bd.json", function(error, bd) {
 	  
 	redrawMap();
 });
-
+*/

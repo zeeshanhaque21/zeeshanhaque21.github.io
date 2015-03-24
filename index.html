@@ -3,6 +3,8 @@
 <head>
     <title>Daily Star Suicide Data Visualization</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF8"> 
+	
+	<link href="./css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./css/dc.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="./css/mainstyles.css" />
 </head>
@@ -14,25 +16,36 @@
     <script type="text/javascript" src="./js/crossfilter.js"></script>
     <script type="text/javascript" src="./js/dc.js"></script>
 	<script  type="text/javascript" src="./js/topojson.v1.min.js"></script>
-	<h1>Daily Star Suicide Visualization</h1>
 	
+	<div id="main-container">
+		<h1>Daily Star Suicide Visualization</h1>
+		
+		<div id="chart-line-suicides"></div>
+			<div id="bd-chart">
+			<strong>Suicide Distribution by District(color: total suicides)</strong>
+			<a class="reset" href="javascript:bdChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			<span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span>
+			<div class="clearfix"></div>
+		</div>
+		<!--div class="viewer"  style="color:#0000FF"></div-->
+		<div class = "visualcontrols">
+		  	<div id="chart-ring-year"></div>
+			<div id="chart-ring-age-group"></div>
+			<div id="chart-ring-gender"></div>
+			<div id="chart-ring-profession"></div>
+			<div id="chart-ring-methodology"></div>
+			<div id="chart-ring-reason"></div>
+		</div>
 
-
-	<div id="chart-line-suicides"></div>
-	<div class="viewer"  style="color:#0000FF"></div>
-	<div class = "visualcontrols">
-	  	<div id="chart-ring-year"></div>
-		<div id="chart-ring-age-group"></div>
-		<div id="chart-ring-gender"></div>
-		<div id="chart-ring-profession"></div>
-		<div id="chart-ring-methodology"></div>
-		<div id="chart-ring-reason"></div>
 	</div>
+
+	
 	<script type="text/javascript" src="./js/drawMap.js"></script>
 	
     <script type="text/javascript">
     var distDim;
     var distSum;
+	var bdChart;
 
 	function print_filter(filter){
 		var f=eval(filter);
@@ -127,7 +140,8 @@
     .x(d3.time.scale().domain([minDate,maxDate]))
     .yAxisLabel("Suicides")
    
-    .brushOn(true)
+    .brushOn(true);
+	/*
     .on("filtered",function(){
      
       distDim = ndx.dimension(function(d) {return d.District;});
@@ -151,7 +165,7 @@
 	distDim.dispose();
 	distSum.dispose();
 	
-	 
+	 */
 	var yearDim  = ndx.dimension(function(d) {return +d.Year;});
 	var year_total = yearDim.group().reduceSum(function(d) {return 1;});
 
@@ -160,7 +174,7 @@
 		.width(150).height(150)
 		.dimension(yearDim)
 		.group(year_total)
-		.innerRadius(30); 
+		.innerRadius(0); 
 	
 	var ageDim  = ndx.dimension(function(d) {return d.AgeGroup;});
 	var age_total = ageDim.group().reduceSum(function(d) {return 1;});
@@ -170,7 +184,7 @@
 		.width(150).height(150)
 		.dimension(ageDim)
 		.group(age_total)
-		.innerRadius(30); 
+		.innerRadius(00); 
 	
 	var genderDim  = ndx.dimension(function(d) {return d.Gender;});
 	var gender_total = genderDim.group().reduceSum(function(d) {return 1;});
@@ -180,7 +194,7 @@
 		.width(150).height(150)
 		.dimension(genderDim)
 		.group(gender_total)
-		.innerRadius(30); 
+		.innerRadius(0); 
 	
 		
 	var profDim  = ndx.dimension(function(d) {return d.Profession;});
@@ -191,7 +205,7 @@
 		.width(150).height(150)
 		.dimension(profDim)
 		.group(prof_total)
-		.innerRadius(30); 
+		.innerRadius(0); 
 		
 	var methodDim  = ndx.dimension(function(d) {return d.Methodology;});
 	var method_total = methodDim.group().reduceSum(function(d) {return 1;});
@@ -201,7 +215,7 @@
 		.width(150).height(150)
 		.dimension(methodDim)
 		.group(method_total)
-		.innerRadius(30); 
+		.innerRadius(0); 
 	
 	var reasonDim  = ndx.dimension(function(d) {return d.Reason;});
 	var reason_total = reasonDim.group().reduceSum(function(d) {return 1;});
@@ -210,9 +224,49 @@
 		.width(150).height(150)
 		.dimension(reasonDim)
 		.group(reason_total)
-		.innerRadius(30); 
+		.innerRadius(0); 
 		
-	dc.renderAll();
+	var distDim1 = ndx.dimension(function(d) {return d.District;});
+	var distSum1 = distDim1.group().reduceSum(function(d){return 1;});
+  
+	bdChart = dc.geoChoroplethChart("#bd-chart");
+	
+	d3.json("./data/bd.json", function (bd) {
+		bdChart.width(500)
+		.height(700)
+		.dimension(distDim1)
+		.group(distSum1)
+		
+		.colors(d3.scale.quantize().range(["#fff5f0","#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#a50f15","#67000d"]))
+		.colorDomain([0,200])
+		.colorCalculator(function (d) { return d ? bdChart.colors()(d) : '#ccc'; })
+		.overlayGeoJson(topojson.feature(bd, bd.objects.subunits).features, "subunits", function (d) {return d.id;})
+		.projection(d3.geo.mercator().scale(scal).translate([-76.5/50.0 * scal, scal/2-scal/55]));
+		
+		bdChart.on("preRender", function(chart) {
+			console.log("hii");
+			chart.colorDomain(d3.extent(chart.data(), chart.valueAccessor()));
+		});
+		bdChart.on("preRedraw", function(chart) {
+			console.log("hi");
+			distDim2 = ndx.dimension(function(d) {return d.District;});
+			distSum2 = distDim2.group().reduceSum(function(d){return 1;});
+			
+			console.log(distSum2.top(1)[0]);
+			distDim2.dispose();
+			distSum2.dispose();
+			//console.log(d3.extent(chart.data(), chart.valueAccessor()));
+			chart.colorDomain([0, distSum2.top(1)[0].value]);
+		});
+	/*	.title(function (d) {
+			return "State: " + d.key + "\nTotal Amount Raised: " + numberFormat(d.value ? d.value : 0) + "M";
+			});*/
+			
+				dc.renderAll();
+	});		
+
+				//dc.renderAll();
+
 
 
   });
