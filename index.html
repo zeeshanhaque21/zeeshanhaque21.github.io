@@ -32,9 +32,9 @@
 		  	<div id="chart-ring-year"></div>
 			<div id="chart-ring-age-group"></div>
 			<div id="chart-ring-gender"></div>
-			<div id="chart-ring-profession"></div>
-			<div id="chart-ring-methodology"></div>
-			<div id="chart-ring-reason"></div>
+			<!--div id="chart-ring-profession"></div-->
+			<!--div id="chart-ring-methodology"></div-->
+			<!--div id="chart-ring-reason"></div-->
 		</div>
 
 	</div>
@@ -178,13 +178,14 @@
 	
 	var ageDim  = ndx.dimension(function(d) {return d.AgeGroup;});
 	var age_total = ageDim.group().reduceSum(function(d) {return 1;});
+	console.log(age_total);
 
 	var ageGroupRingChart   = dc.pieChart("#chart-ring-age-group");
 	ageGroupRingChart
 		.width(150).height(150)
 		.dimension(ageDim)
 		.group(age_total)
-		.innerRadius(00); 
+		.innerRadius(0); 
 	
 	var genderDim  = ndx.dimension(function(d) {return d.Gender;});
 	var gender_total = genderDim.group().reduceSum(function(d) {return 1;});
@@ -196,7 +197,7 @@
 		.group(gender_total)
 		.innerRadius(0); 
 	
-		
+/*		
 	var profDim  = ndx.dimension(function(d) {return d.Profession;});
 	var prof_total = profDim.group().reduceSum(function(d) {return 1;});
 
@@ -225,7 +226,7 @@
 		.dimension(reasonDim)
 		.group(reason_total)
 		.innerRadius(0); 
-		
+	*/	
 	var distDim1 = ndx.dimension(function(d) {return d.District;});
 	var distSum1 = distDim1.group().reduceSum(function(d){return 1;});
   
@@ -239,24 +240,33 @@
 		
 		.colors(d3.scale.quantize().range(["#fff5f0","#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#a50f15","#67000d"]))
 		.colorDomain([0,200])
-		.colorCalculator(function (d) { return d ? bdChart.colors()(d) : '#ccc'; })
+		.colorCalculator(function (d) { 
+			//console.log(d); 
+			if(d) d = 32*Math.log(d);
+			
+			return d ? bdChart.colors()(d) : '#ccc'; 
+		})
 		.overlayGeoJson(topojson.feature(bd, bd.objects.subunits).features, "subunits", function (d) {return d.id;})
 		.projection(d3.geo.mercator().scale(scal).translate([-76.5/50.0 * scal, scal/2-scal/55]));
+		// .colorAccessor(function(d){
+		// 	console.log(d.value);
+		// 	return d.value/100;
+		// });
 		
 		bdChart.on("preRender", function(chart) {
-			console.log("hii");
-			chart.colorDomain(d3.extent(chart.data(), chart.valueAccessor()));
+			//console.log("hii");
+			//chart.colorDomain(d3.extent(chart.data(), chart.valueAccessor()));
 		});
 		bdChart.on("preRedraw", function(chart) {
-			console.log("hi");
-			distDim2 = ndx.dimension(function(d) {return d.District;});
-			distSum2 = distDim2.group().reduceSum(function(d){return 1;});
+			//console.log("hi");
+			//distDim2 = ndx.dimension(function(d) {return d.District;});
+			//distSum2 = distDim2.group().reduceSum(function(d){return 1;});
 			
-			console.log(distSum2.top(1)[0]);
-			distDim2.dispose();
-			distSum2.dispose();
+			//console.log(distSum2.top(1)[0]);
+			//distDim2.dispose();
+			//distSum2.dispose();
 			//console.log(d3.extent(chart.data(), chart.valueAccessor()));
-			chart.colorDomain([0, distSum2.top(1)[0].value]);
+		//	chart.colorDomain([0, distSum2.top(1)[0].value]);
 		});
 	/*	.title(function (d) {
 			return "State: " + d.key + "\nTotal Amount Raised: " + numberFormat(d.value ? d.value : 0) + "M";
