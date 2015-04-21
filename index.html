@@ -32,7 +32,7 @@
 		  	<div id="chart-ring-year"></div>
 			<div id="chart-ring-age-group"></div>
 			<div id="chart-ring-gender"></div>
-			<!--div id="chart-ring-profession"></div-->
+			<div id="chart-ring-profession"></div>
 			<!--div id="chart-ring-methodology"></div-->
 			<!--div id="chart-ring-reason"></div-->
 		</div>
@@ -197,7 +197,7 @@
 		.group(gender_total)
 		.innerRadius(0); 
 	
-/*		
+		
 	var profDim  = ndx.dimension(function(d) {return d.Profession;});
 	var prof_total = profDim.group().reduceSum(function(d) {return 1;});
 
@@ -207,7 +207,7 @@
 		.dimension(profDim)
 		.group(prof_total)
 		.innerRadius(0); 
-		
+/*		
 	var methodDim  = ndx.dimension(function(d) {return d.Methodology;});
 	var method_total = methodDim.group().reduceSum(function(d) {return 1;});
 
